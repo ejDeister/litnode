@@ -121,3 +121,37 @@ export class LitNode {
 const parseString = (html: string) => {
     return (new DOMParser()).parseFromString(html, 'text/html').body.firstElementChild as HTMLElement;
 }
+
+export class PubSub {
+    // currently uses numbers as keys in case I want to switch to enums
+    private static listeners: Record<string, Set<Function>> = {};
+    private static events: Set<string> = new Set();
+
+    static registerEvent(event: string) {
+        PubSub.events.add(event);
+        PubSub.listeners[event] = new Set();
+    }
+
+    static addListener(e: string, func: Function) {
+        if (!PubSub.events.has(e)) return; // err: event not registered
+        PubSub.listeners[e].add(func);
+    }
+
+    static deleteListener(e: string, func: Function) {
+        if (!PubSub.events.has(e)) return; // err: event not registered
+        PubSub.listeners[e].delete(func);
+    }
+
+    static publishEvent(e: string, payload?: any) {
+        if (e in PubSub.listeners) {
+            PubSub.listeners[e].forEach((func) => {
+                try {
+                    func(payload)
+                }
+                catch(e) {
+                    console.error(func+" caused error: "+e);
+                }
+            });
+        }
+    }
+}

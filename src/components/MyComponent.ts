@@ -1,4 +1,4 @@
-import { LitNode } from "../LitNode.ts";
+import { LitNode } from "../LiterallyHtml.ts";
 
 export class MyComp extends LitNode {
     constructor() {
