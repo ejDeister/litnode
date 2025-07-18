@@ -52,12 +52,12 @@ export class LitNode {
             if (id in this.subNodes) {
                 this.subNodes[id].parseIntoNode();
                 if (!this.subNodes[id].root) {
-                    // @todo err: subNode improperly parsed
+                    console.error(`err: subNode ${id} did not parse correctly.`)
                 }
                 this.html = this.html.replace(token, `<div id="${id}"></div>`);
             }
             else {
-                // @todo err: subNode not registered
+                console.error(`err: subNode ${id} not registered.`);
             }
         }
 
