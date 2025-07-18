@@ -122,6 +122,16 @@ const parseString = (html: string) => {
     return (new DOMParser()).parseFromString(html, 'text/html').body.firstElementChild as HTMLElement;
 }
 
+
+/**
+ * A basic Publisher/Subscriber system for listening to user-defined events.
+ * 
+ * Usage follows the flow: 
+ * 1. Register a string name for a type of event e.g. "BUTTON_CLICKED", similar to an enum
+ * 2. (Publisher) Everywhere in your code where the condition for the event is met, call publishEvent with the event name 
+ * 3. (Subscriber) Everywhere in your code you want to react to the event, define a function and register it with addListener
+ * 4. If you want to unregister a subscriber, call deleteListener() with the event name and function signature.
+ */
 export class PubSub {
     // currently uses numbers as keys in case I want to switch to enums
     private static listeners: Record<string, Set<Function>> = {};
@@ -133,12 +143,18 @@ export class PubSub {
     }
 
     static addListener(e: string, func: Function) {
-        if (!PubSub.events.has(e)) return; // err: event not registered
+        if (!PubSub.events.has(e)) {
+            console.error("err: event not registered");
+            return;
+        }; 
         PubSub.listeners[e].add(func);
     }
 
     static deleteListener(e: string, func: Function) {
-        if (!PubSub.events.has(e)) return; // err: event not registered
+        if (!PubSub.events.has(e)) {
+            console.error("err: event not registered");
+            return;
+        }
         PubSub.listeners[e].delete(func);
     }
 
@@ -148,8 +164,8 @@ export class PubSub {
                 try {
                     func(payload)
                 }
-                catch(e) {
-                    console.error(func+" caused error: "+e);
+                catch(error) {
+                    console.error(`${func} caused error: ${error}`);
                 }
             });
         }
