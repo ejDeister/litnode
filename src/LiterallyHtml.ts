@@ -22,13 +22,14 @@ export class LitNode {
     id: string;
     root?: HTMLElement;
     html: string;
-    subNodes: Record<string, LitNode>;
     initFunc?: Function;
 
-    constructor(id: string, html: string = "", subNodes: Record<string, LitNode> = {}) {
+    static ids: Record<string, LitNode>;
+
+    constructor(id: string, html: string = "") {
         this.id = id;
         this.html = html;
-        this.subNodes = subNodes;
+        LitNode.ids[this.id] = this;
     }
 
     /**
@@ -39,6 +40,7 @@ export class LitNode {
     parseIntoNode() {
         // For each token...
         let i = 0;
+        const placeholderIds = [];
         while (true) {
             const ranges = this.nextRange(this.html,i);
             if (!ranges) break; // range not found
@@ -49,12 +51,13 @@ export class LitNode {
             // Recursive call on registered subNodes
             const id = this.html.slice(idRange[0], idRange[1]);
             const token = this.html.slice(tokenRange[0],tokenRange[1]);
-            if (id in this.subNodes) {
-                this.subNodes[id].parseIntoNode();
-                if (!this.subNodes[id].root) {
+            if (id in LitNode.ids) {
+                LitNode.ids[id].parseIntoNode();
+                if (!LitNode.ids[id].root) {
                     console.error(`err: subNode ${id} did not parse correctly.`)
                 }
                 this.html = this.html.replace(token, `<div id="${id}"></div>`);
+                placeholderIds.push(id);
             }
             else {
                 console.error(`err: subNode ${id} not registered.`);
@@ -62,8 +65,8 @@ export class LitNode {
         }
 
         this.root = parseString(this.html);
-        Object.entries(this.subNodes).forEach(([id, subNode]) => {
-            this.root!.querySelector(`#${id}`)?.replaceWith(subNode.root!);
+        placeholderIds.forEach((id) => {
+            this.root!.querySelector(`#${id}`)?.replaceWith(LitNode.ids[id].root!);
         });
 
         this.init();

@@ -2,6 +2,8 @@ import { LitNode, PubSub } from "../LiterallyHtml.ts";
 import { MyComp } from "./MyComponent.ts";
 
 export class Main extends LitNode {
+    myComp: MyComp;
+
     constructor() {
         let counter = 0;
 
@@ -18,11 +20,10 @@ export class Main extends LitNode {
                 #{myComp}
             </div>
         `;
+        
         const myComp = new MyComp();
-        const subNodes: Record<string, LitNode> = {
-            myComp: myComp,
-        };
-        super(id, html, subNodes);
+        super(id, html);
+        this.myComp = myComp;
 
         this.initFunc = () => {
           this.root!.onclick = () => {
