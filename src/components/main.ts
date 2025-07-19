@@ -1,12 +1,12 @@
-import { LitNode, PubSub } from "./LiterallyHtml.ts";
-import { MyComp } from "./components/MyComponent.ts";
+import { LitNode, PubSub } from "../LiterallyHtml.ts";
+import { MyComp } from "./MyComponent.ts";
 
 export class Main extends LitNode {
     constructor() {
         let counter = 0;
 
         const id = "main";
-        const html = `
+        const html = /*html*/`
             <div id="${id}">
                 <style>
                     #${id} {
